@@ -4,18 +4,15 @@
   "description": "Asistente IA que guía con Driver.js",
   "version": "1.0",
   "permissions": [
-    "activeTab"
-  ],
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "css": ["content.css"],
-      "js": ["content.js"],
-      "run_at": "document_end"
-    }
+    "activeTab",
+    "tabs",
+    "scripting"
   ],
   "action": {
     "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
   },
   "host_permissions": [
     "http://*/*",
@@ -23,5 +20,11 @@
   ],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self';"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["driver.css"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

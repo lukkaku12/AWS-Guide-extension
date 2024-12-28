@@ -33,11 +33,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   sendButton.addEventListener("click", handleUserInput);
   guideButton.addEventListener("click", () => {
-    chrome.scripting.executeScript({
-      target: { tabId: chrome.tabs.TAB_ID },
-      files: ['content.js']
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const tabId = tabs[0].id;
+      console.log("Tab ID:", tabId); // Verifica el tabId que se obtiene
+  
+      if (tabs[0].url.includes("aws")) {
+        console.log("AWS Detected: Showing Guide");
+  
+        chrome.runtime.sendMessage({ action: "injectScript", tabId: tabId });
+      }
     });
-  }); // Escuchar el clic del botón guía
+  });
 
   inputField.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
