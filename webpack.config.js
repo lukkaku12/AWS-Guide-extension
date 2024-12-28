@@ -5,10 +5,13 @@ const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
 
 module.exports = {
-  entry: './src/popup.js',
+  entry: {
+    popup: './src/popup.js',
+    content: './src/content.js',
+  },
   devtool: 'source-map',
   output: {
-    filename: 'bundle.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
     clean: true,
   },
@@ -37,8 +40,8 @@ module.exports = {
       readableStream: require.resolve('readable-stream'),
     },
     alias: {
-      'driver.js': path.resolve(__dirname, 'src/driver.js/dist/driver.js.mjs'),
-      'driver.css': path.resolve(__dirname, 'src/driver.js/dist/driver.css'),
+      'driver.js': path.resolve(__dirname, './src/driver.js/dist/driver.js.mjs'),
+      'driver.css': path.resolve(__dirname, './src/driver.js/dist/driver.css'),
     },
     
   },

@@ -1,8 +1,6 @@
 import "driver.css";
 import { driver as Driver } from "driver.js";
 import dotenv from "dotenv";
-import { inyectarElementosDePrueba } from "./inyectarElementosDePrueba";
-import { handleGuideActivation } from "./driverGuide";
 
 dotenv.config();
 
@@ -30,12 +28,16 @@ document.addEventListener("DOMContentLoaded", () => {
     appendMessage("IA: " + aiMessage, "ai");
   };
 
-  inyectarElementosDePrueba();
 
   // Activar guía manualmente desde un botón
 
   sendButton.addEventListener("click", handleUserInput);
-  guideButton.addEventListener("click", handleGuideActivation); // Escuchar el clic del botón guía
+  guideButton.addEventListener("click", () => {
+    chrome.scripting.executeScript({
+      target: { tabId: chrome.tabs.TAB_ID },
+      files: ['content.js']
+    });
+  }); // Escuchar el clic del botón guía
 
   inputField.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
