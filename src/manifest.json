@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Chatbot AI Guide",
+  "description": "Asistente IA que guía con Driver.js",
+  "version": "1.0",
+  "permissions": [
+    "activeTab"
+  ],
+  "content-scripts": {
+    "js": ["inyectarElementosDePrueba.js", "src/driver.js"]
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  }
+}

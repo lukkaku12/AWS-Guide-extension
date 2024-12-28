@@ -1,0 +1,66 @@
+/* Estilos generales */
+body {
+  width: 600px; /* Aumentamos el ancho */
+  height: 800px; /* Aumentamos el alto */
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9; /* Fondo claro para mejor contraste */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 10px; /* Bordes redondeados */
+}
+
+/* Caja del chat */
+#chat-output {
+  height: 500px; /* Aumentamos la altura del área de chat */
+  width: 95%; /* Aumentamos el ancho */
+  border: 1px solid #ccc;
+  border-radius: 5px; /* Bordes suaves */
+  overflow-y: auto;
+  padding: 20px; /* Aumentamos el padding */
+  margin: 20px 0;
+  background-color: #fff; /* Fondo blanco para mensajes */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+}
+
+/* Entrada de usuario */
+#chat-input {
+  width: 85%; /* Hacemos el campo de entrada más grande */
+  padding: 15px; /* Aumentamos el padding */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-size: 18px; /* Aumentamos el tamaño de la fuente */
+  margin-right: 10px;
+}
+
+/* Botón de enviar */
+#sendButton {
+  padding: 15px 30px; /* Hacemos el botón más grande */
+  background-color: #4CAF50; /* Color verde para destacar */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px; /* Aumentamos el tamaño de la fuente */
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+  transition: background-color 0.3s ease;
+}
+
+#sendButton:hover {
+  background-color: #45a049; /* Efecto hover */
+}
+
+/* Ajuste del contenedor de entrada */
+#input-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 95%; /* Alineado con el chatBox */
+  margin-bottom: 20px;
+}
