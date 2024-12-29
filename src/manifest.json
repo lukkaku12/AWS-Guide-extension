@@ -18,12 +18,13 @@
     "http://*/*",
     "https://*/*"
   ],
+ 
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self';"
   },
   "web_accessible_resources": [
     {
-      "resources": ["driver.css"],
+      "resources": ["driver.js", "driver.css"],
       "matches": ["<all_urls>"]
     }
   ]

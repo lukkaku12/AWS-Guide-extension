@@ -1,6 +1,6 @@
-import "driver.css";
-import { driver as Driver } from "driver.js";
+
 import dotenv from "dotenv";
+import { obtenerElementosPagina, startDriverGuide } from "./background";
 
 dotenv.config();
 
@@ -32,17 +32,24 @@ document.addEventListener("DOMContentLoaded", () => {
   // Activar guía manualmente desde un botón
 
   sendButton.addEventListener("click", handleUserInput);
-  guideButton.addEventListener("click", () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      const tabId = tabs[0].id;
-      console.log("Tab ID:", tabId); // Verifica el tabId que se obtiene
+  guideButton.addEventListener("click", async () => {
+    // chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+
+    //   const tabId = tabs[0].id;
+    //   console.log("Tab ID:", tabId); // Verifica el tabId que se obtiene
   
-      if (tabs[0].url.includes("aws")) {
-        console.log("AWS Detected: Showing Guide");
+    //   if (tabs[0].url.includes("aws")) {
+    //     console.log("AWS Detected: Showing Guide");
   
-        chrome.runtime.sendMessage({ action: "injectScript", tabId: tabId });
-      }
-    });
+    //     chrome.runtime.sendMessage({ action: "injectScript", tabId: tabId });
+    //   }
+    // });
+    const elementosPagina = await obtenerElementosPagina();
+    const DriverGuide = await generarPasosConIA(elementosPagina);
+    console.log(DriverGuide)
+    const pasos = JSON.parse(DriverGuide);
+    console.log(pasos)
+    startDriverGuide(pasos);
   });
 
   inputField.addEventListener("keydown", (event) => {
@@ -111,27 +118,26 @@ export async function sendMessageToAI(message, retries = 3) {
 }
 
 // Función para capturar elementos del DOM actual
-function capturarElementosDOM() {
-  return Array.from(document.querySelectorAll("button, input, a")).map(
-    (el) => ({
-      tag: el.tagName,
-      text: el.innerText || el.value || "",
-      classes: el.className,
-      id: el.id,
-      selector: el.id
-        ? `#${el.id}`
-        : el.className
-            .split(" ")
-            .map((c) => `.${c}`)
-            .join(" "),
-    })
-  );
+export function capturarElementosDOM() {
+  return Array.from(document.querySelectorAll("button, input, a")).map((el) => ({
+    tag: el.tagName,
+    text: el.innerText || el.value || "",
+    classes: el.className,
+    id: el.id,
+    selector: el.id
+      ? `#${el.id}`
+      : el.className
+          .split(" ")
+          .map((c) => `.${c}`)
+          .join(" "),
+  }));
 }
 
-// Función para generar pasos dinámicos con OpenAI
-async function generarPasosConIA() {
-  const elementosPagina = capturarElementosDOM();
-  console.log(elementosPagina);
+function limpiarJSON(respuesta) {
+  return respuesta.replace(/```json|```/g, "").trim();
+}
+
+async function generarPasosConIA(elementosPagina) {;
   const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
   try {
@@ -149,26 +155,40 @@ async function generarPasosConIA() {
           {
             role: "system",
             content:
-              "Eres un asistente que ayuda a crear guías interactivas basadas en la interfaz de usuario de una página web, específicamente para ser utilizadas con Driver.js.",
+              "Eres un asistente experto en crear guías interactivas basadas en Driver.js. Responde siempre en formato JSON válido para su uso directo con Driver.js.",
           },
           {
             role: "user",
             content: `
-          El usuario ha ingresado el siguiente texto: "${inputValue}". 
-          Ahora, genera una serie de pasos interactivos basados en estos elementos del DOM, considerando que el usuario quiere realizar la acción: "${inputValue}". 
-          Cada paso debe seguir este formato:
-          1. Descripción del paso (¿qué debe hacer el usuario?).
-          2. Selector de elemento (¿qué elemento del DOM debe ser utilizado?).
-          3. Acción esperada (¿qué ocurrirá después de realizar la acción?).`,
+              Basándote en los elementos siguientes: "${elementosPagina}"
+              y en el texto proporcionado: "${inputValue}",
+              genera pasos interactivos para Driver.js en el siguiente formato estricto:
+              [
+                {
+                  "element": "selector del elemento en formato CSS",
+                  "popover": {
+                    "title": "Título descriptivo del paso",
+                    "description": "Explicación clara de la acción que debe realizar el usuario."
+                  }
+                },
+                {
+                  "element": "otro selector",
+                  "popover": {
+                    "title": "Otro título",
+                    "description": "Otra descripción"
+                  }
+                }
+              ]
+              No proporciones ninguna otra información, explicación o texto adicional.
+            `,
           },
         ],
-        max_tokens: 500,
-        temperature: 0.7,
       }),
     });
 
     const data = await response.json();
-    return data.choices[0].message.content.trim();
+    
+    return limpiarJSON(data.choices[0].message.content.trim());
   } catch (error) {
     console.error("Error al generar pasos con IA:", error);
     return "Hubo un error al generar los pasos.";
@@ -176,8 +196,3 @@ async function generarPasosConIA() {
 }
 
 // Función para iniciar la guía interactiva
-function startDriverGuide(pasos) {
-  const driver = new Driver();
-  driver.setSteps(pasos);
-  driver.drive();
-}
